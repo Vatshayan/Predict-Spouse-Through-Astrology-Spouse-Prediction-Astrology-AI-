@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jyotish Vivah Darshan — Spouse Nature Revealer</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C; --gold-light: #E8C97A; --gold-dim: #8A6F30;
+    --deep: #0A0608; --dark: #110D0F; --mid: #1E1619; --surface: #261B1F;
+    --border: rgba(201,168,76,0.25); --text: #F0E8D5; --muted: #9A8870;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--deep); color:var(--text); font-family:'Cormorant Garamond',serif; min-height:100vh; overflow-x:hidden; }
+  #stars { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
+  .star { position:absolute; background:white; border-radius:50%; animation:twinkle var(--d) ease-in-out infinite alternate; }
+  @keyframes twinkle { from{opacity:0.1;} to{opacity:0.85;} }
+  .mandala-bg { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:700px; height:700px; opacity:0.04; pointer-events:none; z-index:0; animation:rotSlow 120s linear infinite; }
+  @keyframes rotSlow { to{transform:translate(-50%,-50%) rotate(360deg);} }
+  .wrapper { position:relative; z-index:1; max-width:880px; margin:0 auto; padding:40px 24px 80px; }
+  header { text-align:center; padding:40px 0 50px; }
+  .sanskrit { font-family:'IM Fell English',serif; font-style:italic; color:var(--gold-dim); font-size:1.1rem; letter-spacing:3px; margin-bottom:16px; }
+  header h1 { font-family:'Cinzel',serif; font-size:clamp(1.8rem,5vw,3rem); font-weight:600; color:var(--gold); letter-spacing:2px; text-shadow:0 0 40px rgba(201,168,76,0.3); }
+  header h1 span { display:block; font-size:0.55em; font-weight:400; color:var(--muted); letter-spacing:6px; margin-top:8px; font-style:italic; }
+  .ornament { display:flex; align-items:center; gap:16px; justify-content:center; margin:20px 0; color:var(--gold-dim); font-size:1.4rem; }
+  .ornament::before,.ornament::after { content:''; flex:1; max-width:120px; height:1px; background:linear-gradient(to right,transparent,var(--gold-dim)); }
+  .ornament::after { background:linear-gradient(to left,transparent,var(--gold-dim)); }
+  .form-card { background:linear-gradient(135deg,var(--mid),var(--surface)); border:1px solid var(--border); border-radius:4px; padding:40px 36px; position:relative; box-shadow:0 20px 60px rgba(0,0,0,0.6),inset 0 1px 0 rgba(201,168,76,0.1); }
+  .form-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px 32px; }
+  @media(max-width:600px){.form-grid{grid-template-columns:1fr;}}
+  .field { display:flex; flex-direction:column; gap:8px; }
+  label { font-family:'Cinzel',serif; font-size:0.72rem; letter-spacing:2px; color:var(--gold); text-transform:uppercase; }
+  label .sub { display:block; font-family:'Cormorant Garamond',serif; font-size:0.85rem; letter-spacing:0; color:var(--muted); text-transform:none; font-style:italic; margin-top:2px; }
+  select { background:var(--deep); border:1px solid var(--border); color:var(--text); padding:12px 16px; font-family:'Cormorant Garamond',serif; font-size:1rem; border-radius:2px; cursor:pointer; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23C9A84C' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; transition:border-color 0.3s,box-shadow 0.3s; }
+  select:focus { outline:none; border-color:var(--gold); box-shadow:0 0 0 2px rgba(201,168,76,0.15); }
+  select option { background:var(--dark); }
+  .btn-reveal { grid-column:1/-1; margin-top:16px; padding:18px 40px; background:transparent; border:1px solid var(--gold); color:var(--gold); font-family:'Cinzel',serif; font-size:1rem; letter-spacing:4px; cursor:pointer; position:relative; overflow:hidden; transition:color 0.4s; }
+  .btn-reveal::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:var(--gold); transition:left 0.4s ease; z-index:0; }
+  .btn-reveal:hover::before { left:0; }
+  .btn-reveal:hover { color:var(--deep); }
+  .btn-reveal span { position:relative; z-index:1; }
+  #result { margin-top:40px; display:none; animation:fadeUp 0.6s ease forwards; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+  .result-header { text-align:center; padding:30px 0 24px; }
+  .result-header h2 { font-family:'Cinzel',serif; font-size:1.5rem; color:var(--gold-light); letter-spacing:3px; }
+  .result-header p { color:var(--muted); font-style:italic; font-size:1.1rem; margin-top:8px; }
+  .result-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; }
+  @media(max-width:600px){.result-grid{grid-template-columns:1fr;}}
+  .trait-card { background:var(--mid); border:1px solid var(--border); border-radius:2px; padding:20px 22px; }
+  .trait-card h3 { font-family:'Cinzel',serif; font-size:0.72rem; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-bottom:10px; }
+  .trait-card p { font-size:1rem; line-height:1.75; color:var(--text); }
+  .full-analysis { background:var(--mid); border:1px solid var(--border); padding:28px 30px; border-radius:2px; position:relative; }
+  .full-analysis::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+  .full-analysis h3 { font-family:'Cinzel',serif; color:var(--gold-light); letter-spacing:2px; font-size:1.1rem; margin-bottom:18px; }
+  .full-analysis p { font-size:1.05rem; line-height:1.85; color:var(--text); margin-bottom:14px; }
+  .full-analysis p:last-child { margin-bottom:0; }
+  .source-tag { color:var(--muted); font-style:italic; font-size:0.88rem; margin-top:20px; border-top:1px solid var(--border); padding-top:16px; }
+  .error-msg { background:rgba(139,58,82,0.2); border:1px solid #8B3A52; padding:16px 20px; border-radius:2px; color:#e0a0b0; font-size:0.95rem; display:none; margin-top:16px; }
+  footer { text-align:center; padding-top:60px; color:var(--muted); font-size:0.85rem; font-style:italic; opacity:0.6; }
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<svg class="mandala-bg" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" stroke="#C9A84C" stroke-width="0.5" transform="translate(250,250)">
+    <circle r="240"/><circle r="200"/><circle r="160"/><circle r="120"/><circle r="80"/><circle r="40"/>
+    <ellipse rx="30" ry="100" transform="rotate(0)"/><ellipse rx="30" ry="100" transform="rotate(30)"/>
+    <ellipse rx="30" ry="100" transform="rotate(60)"/><ellipse rx="30" ry="100" transform="rotate(90)"/>
+    <ellipse rx="30" ry="100" transform="rotate(120)"/><ellipse rx="30" ry="100" transform="rotate(150)"/>
+    <ellipse rx="30" ry="100" transform="rotate(180)"/><ellipse rx="30" ry="100" transform="rotate(210)"/>
+    <ellipse rx="30" ry="100" transform="rotate(240)"/><ellipse rx="30" ry="100" transform="rotate(270)"/>
+    <ellipse rx="30" ry="100" transform="rotate(300)"/><ellipse rx="30" ry="100" transform="rotate(330)"/>
+    <line x1="-240" y1="0" x2="240" y2="0"/><line x1="0" y1="-240" x2="0" y2="240"/>
+    <line x1="-170" y1="-170" x2="170" y2="170"/><line x1="170" y1="-170" x2="-170" y2="170"/>
+  </g>
+</svg>
+
+<div class="wrapper">
+  <header>
+    <div class="sanskrit">॥ विवाह ज्योतिष दर्शन ॥</div>
+    <h1>Jyotish Vivah Darshan<span>Vedic Spouse Nature Revealer</span></h1>
+    <div class="ornament">✦</div>
+    <p style="color:var(--muted);font-style:italic;font-size:1.1rem;max-width:560px;margin:0 auto;line-height:1.7;">Select your Vedic indicators to unveil the nature, characteristics, and destiny of your life partner through ancient Jyotish wisdom.</p>
+  </header>
+
+  <div class="form-card">
+    <div class="form-grid">
+      <div class="field">
+        <label>Darakaraka Planet<span class="sub">Significator of Spouse (lowest degree planet)</span></label>
+        <select id="darakaraka">
+          <option value="">— Select Planet —</option>
+          <option value="Sun">Sun (Surya)</option><option value="Moon">Moon (Chandra)</option>
+          <option value="Mars">Mars (Mangal)</option><option value="Mercury">Mercury (Budha)</option>
+          <option value="Jupiter">Jupiter (Guru)</option><option value="Venus">Venus (Shukra)</option>
+          <option value="Saturn">Saturn (Shani)</option><option value="Rahu">Rahu (North Node)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>7th House / DK Nakshatra<span class="sub">Lunar mansion influencing spouse</span></label>
+        <select id="nakshatra">
+          <option value="">— Select Nakshatra —</option>
+          <option value="Ashwini">Ashwini</option><option value="Bharani">Bharani</option>
+          <option value="Krittika">Krittika</option><option value="Rohini">Rohini</option>
+          <option value="Mrigashira">Mrigashira</option><option value="Ardra">Ardra</option>
+          <option value="Punarvasu">Punarvasu</option><option value="Pushya">Pushya</option>
+          <option value="Ashlesha">Ashlesha</option><option value="Magha">Magha</option>
+          <option value="Purva Phalguni">Purva Phalguni</option><option value="Uttara Phalguni">Uttara Phalguni</option>
+          <option value="Hasta">Hasta</option><option value="Chitra">Chitra</option>
+          <option value="Swati">Swati</option><option value="Vishakha">Vishakha</option>
+          <option value="Anuradha">Anuradha</option><option value="Jyeshtha">Jyeshtha</option>
+          <option value="Mula">Mula</option><option value="Purva Ashadha">Purva Ashadha</option>
+          <option value="Uttara Ashadha">Uttara Ashadha</option><option value="Shravana">Shravana</option>
+          <option value="Dhanishtha">Dhanishtha</option><option value="Shatabhisha">Shatabhisha</option>
+          <option value="Purva Bhadrapada">Purva Bhadrapada</option><option value="Uttara Bhadrapada">Uttara Bhadrapada</option>
+          <option value="Revati">Revati</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>7th House Ashtakavarga Score<span class="sub">Bindus in 7th house (0–56)</span></label>
+        <select id="ashtakavarga">
+          <option value="">— Select Score Range —</option>
+          <option value="very_low">0–18 (Very Low)</option><option value="low">19–25 (Low)</option>
+          <option value="average">26–30 (Average)</option><option value="good">31–37 (Good)</option>
+          <option value="high">38–45 (High)</option><option value="very_high">46–56 (Exceptional)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Planet in 7th House<span class="sub">Planet sitting in the house of marriage</span></label>
+        <select id="seventh_planet">
+          <option value="">— Select or None —</option>
+          <option value="None">None (Empty 7th)</option><option value="Sun">Sun</option>
+          <option value="Moon">Moon</option><option value="Mars">Mars</option>
+          <option value="Mercury">Mercury</option><option value="Jupiter">Jupiter</option>
+          <option value="Venus">Venus</option><option value="Saturn">Saturn</option>
+          <option value="Rahu">Rahu</option><option value="Ketu">Ketu</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>7th House Lord Planet<span class="sub">Ruler of the 7th house sign</span></label>
+        <select id="seventh_lord">
+          <option value="">— Select Planet —</option>
+          <option value="Sun">Sun</option><option value="Moon">Moon</option>
+          <option value="Mars">Mars</option><option value="Mercury">Mercury</option>
+          <option value="Jupiter">Jupiter</option><option value="Venus">Venus</option>
+          <option value="Saturn">Saturn</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Upapada Lagna Sign<span class="sub">Special Ascendant for marriage</span></label>
+        <select id="upapada">
+          <option value="">— Select Sign —</option>
+          <option value="Aries">Aries</option><option value="Taurus">Taurus</option>
+          <option value="Gemini">Gemini</option><option value="Cancer">Cancer</option>
+          <option value="Leo">Leo</option><option value="Virgo">Virgo</option>
+          <option value="Libra">Libra</option><option value="Scorpio">Scorpio</option>
+          <option value="Sagittarius">Sagittarius</option><option value="Capricorn">Capricorn</option>
+          <option value="Aquarius">Aquarius</option><option value="Pisces">Pisces</option>
+        </select>
+      </div>
+      <button class="btn-reveal" onclick="analyzeSpouse()"><span>✦ REVEAL SPOUSE NATURE ✦</span></button>
+    </div>
+    <div class="error-msg" id="error">Please select all six indicators before proceeding.</div>
+  </div>
+
+  <div id="result">
+    <div class="result-header">
+      <h2>Your Spouse's Portrait</h2>
+      <p id="result-subtitle"></p>
+    </div>
+    <div class="result-grid" id="trait-grid"></div>
+    <div class="full-analysis" id="full-analysis"></div>
+  </div>
+
+  <footer>
+    <p>This reading is for spiritual and educational purposes based on classical Vedic Jyotish principles.</p>
+    <p style="margin-top:6px;">॥ सर्वे भवन्तु सुखिनः ॥</p>
+  </footer>
+</div>
+
+<script>
+// ─── STARS ───
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 180; i++) {
+  const s = document.createElement('div'); s.className = 'star';
+  const sz = Math.random()*2.5+0.5;
+  s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*4+2).toFixed(1)}s;animation-delay:${(Math.random()*4).toFixed(1)}s`;
+  starsEl.appendChild(s);
+}
+
+// ═══════════════════════════════════════════════════
+// DATASET — All readings stored locally, zero API
+// ═══════════════════════════════════════════════════
+
+const DATA = {
+
+  darakaraka: {
+    Sun: {
+      appearance: "The spouse is likely to have a strong, dignified physical presence — broad forehead, commanding eyes, and an upright posture that naturally draws attention. There may be a golden or warm undertone to their complexion, and their hair tends to be thick and lustrous. They carry themselves with an air of natural authority, making them appear distinguished even in casual settings.",
+      personality: "This partner is proud, self-assured, and deeply principled — they possess the solar qualities of leadership and willpower. They may have a fixed, sometimes stubborn nature, driven by their desire to be respected and admired. They are generous to those they love but expect loyalty and devotion in return. Their ego must be handled with care, as wounded pride can make them withdraw or become domineering.",
+      profession: "The spouse likely works in fields of authority, governance, administration, or public life. Careers in government, management, politics, medicine, or any role that places them in leadership are common. They may also be drawn to performing arts, where they can shine at the centre of attention.",
+      relationship: "In marriage, they naturally take the lead and expect their partner to respect their position. They are generous, warm, and fiercely loyal to family. However, they may struggle with compromise and can be demanding. They show love through acts of protection and provision rather than emotional vulnerability.",
+      strengths: "Unwavering loyalty, strong moral code, great provider, natural protector, deeply inspiring to those around them. They bring solar warmth, confidence, and direction into the home.",
+      challenges: "Pride, ego conflicts, rigidity, and the need for constant admiration can create friction. They may struggle to show emotional softness and can unconsciously dominate the partnership.",
+      spiritual: "The spouse is likely drawn to solar deities, Shaiva traditions, or structured spiritual practices that emphasise discipline, righteousness, and dharma. They see spirituality as a matter of duty and honour, walking the path of the righteous king or queen."
+    },
+    Moon: {
+      appearance: "The spouse tends to have soft, round features — a luminous complexion, gentle expressive eyes, and a comforting physical presence. They may have a slightly fuller build and a natural grace to their movements. Their face is often described as moon-like — serene, beautiful, and emotionally transparent.",
+      personality: "Deeply nurturing, emotionally intuitive, and empathetic, this partner feels everything intensely. Their moods may fluctuate like the tides — joyful and affectionate at times, withdrawn and moody at others. They are highly sensitive to their environment and to the emotional states of those around them, making them either deeply healing or easily overwhelmed.",
+      profession: "Careers in caregiving, nursing, teaching young children, hospitality, catering, psychology, or any service-oriented role suit them well. They may also work in creative fields involving water, imagination, or emotional storytelling.",
+      relationship: "They are devoted, caring partners who create a deeply emotional home environment. They thrive on closeness and emotional bonding. They may be clingy or fearful of abandonment if their emotional needs are not met. Their love is unconditional but also craves constant reassurance.",
+      strengths: "Extraordinary emotional depth, nurturing instinct, loyalty, intuition, and the ability to create a warm, loving home. They remember every detail about those they love.",
+      challenges: "Emotional volatility, over-sensitivity, neediness, and difficulty separating their feelings from their partner's can strain the relationship. Mood cycles may be difficult to navigate.",
+      spiritual: "The spouse is drawn to goddess worship, lunar rituals, or devotional practices connected to water, motherhood, and the divine feminine. They may have a natural gift for healing, prayer, or intuitive spiritual work."
+    },
+    Mars: {
+      appearance: "The spouse is physically energetic and athletic — they often have a strong, toned body, sharp facial features, and a confident, direct gaze. Reddish undertones in the complexion, scars or marks from physical activity, and a quick, purposeful manner of movement are common markers.",
+      personality: "Bold, passionate, and fiercely independent — this partner is not one to be caged. They have a warrior spirit, competitive by nature, and do not shy away from confrontation. They are intensely loyal to those they consider their own and fiercely protective. Anger may flare quickly, but it passes just as fast.",
+      profession: "Mars-driven spouses thrive in physically demanding or competitive fields — military, athletics, surgery, engineering, firefighting, police, or entrepreneurship. They need work that challenges them and gives them a sense of conquest.",
+      relationship: "Passion and intensity define this marriage. There is a magnetic, sometimes combustible chemistry. They are honest to the point of bluntness and expect the same. Arguments may be frequent but reconciliation is usually quick. They show love through action and protection.",
+      strengths: "Courage, passion, directness, physical vitality, fierce protection of loved ones, and the drive to conquer obstacles on behalf of the family.",
+      challenges: "Short temper, impulsiveness, dominance, and difficulty with compromise or vulnerability. They may unconsciously create conflict as a way to feel alive.",
+      spiritual: "The spouse may be drawn to powerful deity worship — Hanuman, Durga, Kali, or other warrior deities. Their spirituality is active and disciplined, focused on tapas, willpower, and overcoming obstacles."
+    },
+    Mercury: {
+      appearance: "The spouse often has a youthful, alert appearance — quick-moving eyes, an expressive face, and a slender, agile build that defies their age. They dress cleverly and their hands are often noted for their dexterity and expressiveness.",
+      personality: "Witty, intellectually curious, and communicative, this partner's mind never stops moving. They are adaptable, versatile, and sometimes restless — drawn to ideas, learning, and conversation. They can be charming, playful, and brilliant in social situations, though they may appear emotionally detached at times.",
+      profession: "Writing, journalism, teaching, accounting, programming, trading, consulting, or any field that requires analytical or communication skills. They may juggle multiple roles or projects simultaneously.",
+      relationship: "Intellectual connection is the foundation of this marriage. They need a partner who can stimulate their mind as much as their heart. Conversation, shared learning, and wit keep the relationship alive. They may avoid heavy emotional confrontations, preferring rational discussion.",
+      strengths: "Intelligence, adaptability, humour, communication skill, and the ability to solve problems creatively. They bring mental stimulation and versatility to the marriage.",
+      challenges: "Inconsistency, nervousness, overthinking, emotional shallowness, and the tendency to talk their way around real emotional issues.",
+      spiritual: "Mercury-ruled spouses are drawn to philosophical study, sacred texts, mantra practice, or knowledge-based spiritual traditions. They approach the divine through the intellect and love to discuss metaphysics."
+    },
+    Jupiter: {
+      appearance: "The spouse tends to be tall or well-built, with a generous, open face and a warm, expansive presence that makes people feel at ease. There may be a natural wisdom or glow about them — people often sense their goodness before they even speak.",
+      personality: "Wise, generous, morally upright, and deeply philosophical — this is one of the most auspicious Darakarakas. The spouse is likely to be dharmic, knowledgeable, and spiritually inclined. They are the teacher-guide archetype, always seeing the bigger picture and offering wisdom during difficulties.",
+      profession: "Teaching, law, counselling, religion, philosophy, medicine, finance, or higher education. They are often respected in their community and may hold positions of trust and moral authority.",
+      relationship: "This partner brings grace, expansion, and wisdom to the marriage. They are supportive, encouraging, and principled. They may be somewhat idealistic or preachy at times, but their intentions are always pure. The marriage tends to be stable and spiritually enriching.",
+      strengths: "Wisdom, generosity, spiritual strength, moral integrity, excellent provider, devoted to family dharma, and the ability to see the best in their partner.",
+      challenges: "Over-optimism, moralising, rigidity in beliefs, weight gain, and a tendency to neglect practical details in favour of ideals.",
+      spiritual: "Deeply spiritual, the spouse may be devoted to a guru, engaged in scriptural study, or practice consistent prayer and ritual. They see the marriage itself as a dharmic sacred institution."
+    },
+    Venus: {
+      appearance: "Venus Darakaraka blesses the native with a spouse of exceptional physical beauty — refined features, lustrous skin, an elegant bearing, and a natural sense of style. They have a graceful, attractive presence and a pleasing, harmonious energy that draws people to them.",
+      personality: "Charming, refined, artistic, and pleasure-loving — this partner has a deep appreciation for beauty in all its forms. They are diplomatic, relationship-oriented, and skilled at creating harmony. They may also be indulgent, romantic, and sensual in their expression of love.",
+      profession: "Arts, fashion, music, design, beauty, luxury goods, diplomacy, or any field where aesthetics and refinement matter. They may also work in relationships counselling, entertainment, or high-end hospitality.",
+      relationship: "Romance, beauty, and pleasure are central to this marriage. The spouse is a devoted, affectionate partner who creates a comfortable, beautiful home. They thrive in relationships that feel equal and aesthetically harmonious, and they may suffer in environments of conflict or ugliness.",
+      strengths: "Beauty, charm, artistic talent, romantic devotion, ability to create harmony and joy, sensual warmth, and social grace.",
+      challenges: "Vanity, indulgence, possessiveness in love, difficulty with emotional confrontation, and a tendency to avoid difficult truths in favour of peace.",
+      spiritual: "The spouse is often drawn to Lakshmi worship, tantric practices, or traditions that celebrate the divine feminine and the sacredness of beauty, love, and abundance."
+    },
+    Saturn: {
+      appearance: "The spouse may have a lean, angular, or serious physical appearance — sharp cheekbones, steady deep-set eyes, and a certain gravity in their manner. They often appear older than their years, or there may be a noticeable age difference in the marriage.",
+      personality: "Serious, disciplined, hardworking, and deeply responsible — this partner is not frivolous. They are reliable, measured in their speech, and slow to open emotionally. Once committed, however, their loyalty is absolute and unwavering. They may carry a certain sadness or weight from past karma.",
+      profession: "Law, architecture, mining, agriculture, real estate, research, engineering, or any field requiring patience, precision, and long-term thinking. They often rise slowly but steadily in their careers.",
+      relationship: "This marriage may start slowly or face early delays and tests, but it is built on a strong foundation of duty, respect, and endurance. The spouse shows love through service, stability, and dependability rather than romance or grand gestures.",
+      strengths: "Exceptional reliability, long-term commitment, wisdom through hardship, patience, and the ability to build lasting structures — material and relational.",
+      challenges: "Emotional coldness, pessimism, rigidity, excessive seriousness, and the tendency to prioritise duty over tenderness. They may struggle to express affection.",
+      spiritual: "Saturn Darakaraka spouses often follow austere, disciplined spiritual paths — meditation, fasting, service to the poor, or devotion to Shiva in his ascetic form. Karma yoga is their natural spiritual mode."
+    },
+    Rahu: {
+      appearance: "The spouse may be unconventional in appearance — striking, unusual, or from a noticeably different cultural or ethnic background. They stand out from the crowd, often in a mysterious or magnetic way. Their style may be eclectic, modern, or boundary-pushing.",
+      personality: "Magnetic, ambitious, unconventional, and intensely focused on their desires — Rahu spouses are never boring. They are driven by hunger for experience and achievement, and they may have a fascinating, somewhat obsessive quality. They can be brilliant innovators or relentless pursuers of worldly goals.",
+      profession: "Technology, foreign affairs, media, research, politics, film, or any field at the cutting edge of society. They often have unusual or hybrid careers and may work across cultures or in foreign lands.",
+      relationship: "This marriage is rarely conventional. It may involve different backgrounds, unexpected circumstances, or a karmic intensity that defies easy explanation. The relationship is transformative but can also be unstable if Rahu's restlessness is not channelled wisely.",
+      strengths: "Ambition, magnetism, worldly intelligence, cross-cultural understanding, and the ability to reinvent themselves and the relationship.",
+      challenges: "Instability, obsession, deception, materialism, and the tendency to pursue desires at the cost of emotional depth and commitment.",
+      spiritual: "Rahu spouses may be drawn to esoteric practices, foreign spiritual traditions, occult sciences, or unorthodox paths. Their spiritual journey is often non-linear and deeply transformative."
+    }
+  },
+
+  nakshatra: {
+    Ashwini: "The Ashwini Nakshatra influence brings a spouse who is quick, energetic, and youthful in spirit — ruled by the divine twin physicians, they carry healing energy and a love of speed. They are spontaneous, adventurous, and may have a physician-like ability to restore vitality to those around them. Their nature is initiatory and courageous, though impatience can be a weakness.",
+    Bharani: "Bharani's energy — ruled by Yama and Venus — brings a spouse of intense, magnetic, and creative nature. They are deeply connected to cycles of creation and dissolution, making them powerful creative forces. Passionate and sometimes fiercely possessive, they love with extraordinary depth. They may work in creative or transformative fields and have a strong sense of right and wrong.",
+    Krittika: "Krittika's fire, ruled by the Sun and presided by Agni, brings a spouse who is sharp, direct, and fiercely independent. They have the sword-like quality of cutting through illusion and speaking truth without hesitation. Proud and self-reliant, they are excellent providers but may struggle with tenderness. They are deeply loyal once committed.",
+    Rohini: "Ruled by the Moon and Brahma, Rohini is one of the most auspicious nakshatras for a spouse. It brings beauty, sensuality, and creative abundance. The partner is likely to be attractive, artistically gifted, materially prosperous, and deeply devoted. They love luxury, nature, and building beautiful things. Their nature is fertile, grounded, and romantically devoted.",
+    Mrigashira: "Mrigashira brings a searching, curious, and gentle spouse — always seeking something just beyond the horizon. Ruled by Mars and Soma, they combine sensitivity with restlessness. They are articulate, affectionate, and mentally agile. The quest for beauty and truth drives them. They make charming, witty partners but may be difficult to pin down emotionally.",
+    Ardra: "Ruled by Rudra and Rahu, Ardra brings a spouse of intense emotional complexity — stormy on the surface but with a profound depth beneath. They are intellectually sharp, often brilliant, and capable of great transformation. The marriage may involve emotional storms that ultimately lead to renewal and deeper understanding. They excel in research, science, or the arts.",
+    Punarvasu: "Jupiter's nakshatra of renewal — the spouse is optimistic, philosophical, and deeply devoted to truth. They have a joyful, expansive nature and a gift for regeneration after difficulty. They are idealistic, generous, and spiritually inclined. The marriage is blessed with a quality of rejuvenation — even after conflict, there is always a fresh beginning.",
+    Pushya: "The most auspicious of all nakshatras — ruled by Saturn and Jupiter. The spouse is nurturing, wise, devoted, and deeply committed to family and dharma. They are excellent caregivers, stable providers, and spiritually mature individuals who bring profound blessings to the marriage. They are humble, patient, and deeply reliable.",
+    Ashlesha: "Ruled by Mercury and the Nagas, Ashlesha brings a spouse of penetrating intelligence and hidden depths. They are perceptive, strategic, and highly intuitive — sometimes psychic. They can be deeply protective but also possessive and manipulative if insecure. There is a serpentine wisdom and intensity about them that makes the relationship transformative.",
+    Magha: "Ruled by the Pitrs (ancestors) and Ketu, Magha brings a spouse of regal bearing and ancestral pride. They carry themselves with dignity and have a deep connection to lineage, tradition, and honour. They may have aristocratic or prominent family connections. The marriage involves themes of legacy, respect, and the honouring of roots.",
+    "Purva Phalguni": "Ruled by Venus and Bhaga, the deity of marital bliss — this nakshatra brings a spouse who is artistic, romantic, and pleasure-loving in the most auspicious sense. They are affectionate, creative, and deeply devoted to the comforts and joys of domestic life. The marriage is blessed with happiness, sensuality, and creative abundance.",
+    "Uttara Phalguni": "Ruled by the Sun and Aryaman, the deity of contracts and unions — Uttara Phalguni brings a spouse who is reliable, generous, and deeply committed to the institution of marriage itself. They believe in partnership as a sacred contract. They are socially skilled, responsible, and bring material comfort and social grace to the union.",
+    Hasta: "Ruled by the Moon and Savitar, Hasta brings a spouse who is skilful, witty, intelligent, and artistically talented with their hands. They are adaptable, charming, and excellent at managing practical details of daily life. They can be playful and sometimes manipulative, but their deep affection and practical intelligence make them wonderful life partners.",
+    Chitra: "Ruled by Mars and Vishvakarman, the divine architect — Chitra brings a spouse who is strikingly beautiful, artistically gifted, and passionately creative. They have an eye for beauty and perfection in all things. They are independent, magnetic, and may have a glamorous or artistic career. They bring aesthetic elegance and passionate energy to the marriage.",
+    Swati: "Ruled by Rahu and Vayu, the wind — Swati brings a spouse who is independent, diplomatic, and deeply freedom-loving. Like a reed in the wind, they are flexible, socially gracious, and gifted at trade and communication. They need space and independence within the marriage and thrive when both partners respect each other's autonomy.",
+    Vishakha: "Ruled by Jupiter and Indra-Agni, Vishakha brings a spouse of intense focus, determination, and ambition. They are goal-oriented and do not rest until they achieve what they set out for. This brings enormous worldly success but can also create friction if their intensity overshadows the emotional needs of the relationship.",
+    Anuradha: "Ruled by Saturn and Mitra, the deity of friendship and devotion — Anuradha brings a spouse who is deeply devoted, loyal, and emotionally mature. They excel at maintaining long-term relationships and have a gift for friendship and spiritual community. They are disciplined yet warm, and bring steadiness and devotion to the marriage.",
+    Jyeshtha: "Ruled by Mercury and Indra, the chief of the gods — Jyeshtha brings a spouse who is a natural leader, protective, and intensely responsible. They are often the eldest or the one others rely upon. They carry a certain gravitas and protective intensity about them. The marriage involves themes of power, responsibility, and the burden of leadership.",
+    Mula: "Ruled by Ketu and Nirriti, Mula brings a spouse who is deeply philosophical, truth-seeking, and transformative. They are interested in the roots of things — in dismantling illusion and getting to the core of reality. The marriage may involve upheaval that ultimately leads to profound liberation and authenticity.",
+    "Purva Ashadha": "Ruled by Venus and Apas, the water deity — Purva Ashadha brings a spouse who is invincible in spirit, idealistic, and deeply passionate. They have a purifying, cleansing energy and a natural confidence that cannot be broken by adversity. They are inspired, creative, and bring a quality of invincibility to the union.",
+    "Uttara Ashadha": "Ruled by the Sun and Vishvedevas — Uttara Ashadha brings a spouse of deep integrity, universal values, and noble character. They are ethical, hardworking, and driven by service to something greater than themselves. The marriage is long-lasting, built on mutual respect, and often contributes something meaningful to the broader world.",
+    Shravana: "Ruled by the Moon and Vishnu — Shravana brings a spouse who is an excellent listener, deeply wise, and devoted to learning and preservation. They honour tradition and family values while also being open-minded and well-travelled. They are nurturing, attentive partners who remember everything and show love through deep, active listening.",
+    Dhanishtha: "Ruled by Mars and the Ashta Vasus — Dhanishtha brings a spouse who is dynamic, musical, and materially prosperous. They have a gift for rhythm — in music, in life, and in relationships. They are socially vibrant, generous, and bring material abundance to the marriage. However, they may be slow to commit emotionally.",
+    Shatabhisha: "Ruled by Rahu and Varuna — Shatabhisha brings a spouse who is mystical, independent, and deeply private. They are healers, researchers, or visionaries who walk their own unconventional path. They need significant personal space and may seem emotionally distant, but their inner world is extraordinarily rich and deep.",
+    "Purva Bhadrapada": "Ruled by Jupiter and Aja Ekapad — Purva Bhadrapada brings a spouse who is passionate, intense, and spiritually transformative. They are two-sided in nature — capable of great inspiration and great intensity. They are driven by a vision of something beyond the ordinary and may sacrifice comfort for their higher calling.",
+    "Uttara Bhadrapada": "Ruled by Saturn and Ahir Budhnya — Uttara Bhadrapada brings a spouse who is profoundly wise, patient, and deeply spiritual. They are the archetype of the mystic elder — calm, compassionate, and deeply rooted. They bring extraordinary depth and stability to the marriage and are devoted to spiritual growth throughout life.",
+    Revati: "Ruled by Mercury and Pushan, the nourisher and guide — Revati brings a spouse who is gentle, compassionate, and deeply empathetic. They are the ideal of the spiritual companion — guiding, nurturing, and walking the path of love and service. They may work in healing or spiritual fields and bring an otherworldly grace to the relationship."
+  },
+
+  ashtakavarga: {
+    very_low: "With very few bindus (0–18) in the 7th house, the marriage axis carries significant karmic weight and challenge. The partnership may involve delays in finding a suitable spouse, obstacles within the relationship, or a partner who is either frequently absent or emotionally unavailable. This is not a sentence of unhappiness but a call for deep karmic work, patience, and choosing a partner with profound care and spiritual alignment. Strong remedies, mutual effort, and Saturn-Venus propitiation can help immensely.",
+    low: "A low Ashtakavarga score (19–25) in the 7th house indicates a marriage that requires conscious effort, mutual sacrifice, and realistic expectations. There may be periods of difficulty, misunderstanding, or emotional distance. However, such marriages often forge the deepest bonds through shared trials. The spouse may carry their own karmic burdens, and compassion will be the key that unlocks the relationship's hidden beauty.",
+    average: "An average score (26–30) suggests a marriage that is moderately supported — not without its tests, but fundamentally workable. The relationship will have its seasons of closeness and distance. With mutual respect, communication, and conscious effort, this marriage can be genuinely fulfilling. The spouse brings a balanced combination of gifts and challenges, making the union a vehicle for mutual growth.",
+    good: "A good score (31–37) indicates a well-supported marriage house. The spouse is generally a positive presence in the native's life — bringing stability, reasonable happiness, and mutual respect. Significant obstacles in marriage are less likely, and when they arise, the couple has the inner resources to resolve them. The partnership tends to be a source of genuine comfort and companionship.",
+    high: "A high score (38–45) in the 7th house is a powerful blessing — the marriage is well-protected by multiple planetary energies. The spouse tends to be a genuine asset to the native's life, bringing prosperity, happiness, social connection, and emotional fulfilment. Conflicts are resolved more easily, and the relationship has a natural resilience and warmth that sustains it through life's inevitable changes.",
+    very_high: "An exceptional Ashtakavarga score (46–56) is rare and deeply auspicious. It indicates that the marriage itself is a great fortune in the native's life — a divinely supported union. The spouse is likely to be extraordinarily beneficial — a partner who elevates the native's life in every dimension. Such marriages are spiritually fated and bring profound joy, prosperity, and mutual spiritual evolution."
+  },
+
+  seventh_planet: {
+    None: "An empty 7th house does not weaken marriage — it simply means the marriage experience is primarily shaped by the 7th lord's placement and the Darakaraka, giving the native more flexibility in finding their ideal partner. The absence of a direct planetary occupant can indicate a spouse who is described more purely by the sign's energy and the 7th lord rather than by a specific planetary archetype.",
+    Sun: "The Sun in the 7th house brings a spouse of strong character, pride, and authority — but also creates tension between the native's sense of self and the partner's ego. The marriage may involve power dynamics and the challenge of two strong individuals learning to share space. The spouse is likely successful, dignified, and respected, but compromise must be consciously cultivated.",
+    Moon: "The Moon in the 7th brings emotional depth, sensitivity, and a nurturing quality to the marriage. The spouse is likely to be highly empathetic, intuitive, and deeply invested in emotional bonding. The relationship is characterised by emotional richness — but also by mood fluctuations and the need for constant emotional reassurance. The native's emotional fulfilment is closely tied to the health of this marriage.",
+    Mars: "Mars in the 7th house is classically associated with Kuja Dosha — indicating a spouse of passionate, independent, and sometimes combative nature. The marriage will be intense, physically vital, and deeply passionate. However, conflicts may be frequent and sharp. The partner is courageous and direct. When both partners channel this energy positively, the marriage becomes a dynamic, mutually empowering force.",
+    Mercury: "Mercury in the 7th brings an intellectually stimulating, witty, and communicative spouse. The marriage is built significantly on mental connection — shared ideas, conversation, and collaborative thinking. The partner is likely young-looking, adaptable, and skilled in business or communication. The relationship thrives on dialogue and mutual intellectual respect.",
+    Jupiter: "Jupiter in the 7th is one of the most auspicious placements for marriage. The spouse is wise, generous, spiritually inclined, and morally upright. The marriage is generally happy, stable, and expansive in its blessings. The partner acts as a teacher and guide. However, there may be issues with over-idealism or the partner becoming somewhat preachy or self-righteous.",
+    Venus: "Venus in the 7th is its own house, bestowing great beauty, charm, and romantic fulfilment in marriage. The spouse is likely beautiful, artistically gifted, and deeply romantic. The partnership is characterised by mutual attraction, aesthetic pleasure, and a genuine love for each other's company. This is one of the most favourable placements for marital happiness and physical attraction.",
+    Saturn: "Saturn in the 7th often delays marriage and brings a partner who is older, serious, or carries the weight of significant responsibility. The marriage is characterised by duty, discipline, and long-term commitment. It may not be overtly romantic, but it is enduring. The spouse is reliable and hardworking, though emotional warmth may need to be consciously cultivated between the couple.",
+    Rahu: "Rahu in the 7th brings an unconventional, intensely karmic marriage. The spouse may be from a different background, culture, or walk of life. There is a magnetic, sometimes obsessive quality to the attraction. The relationship is transformative and may involve unusual circumstances of meeting or sustaining the marriage. Rahu here calls for conscious awareness of desires and their underlying motivations.",
+    Ketu: "Ketu in the 7th brings a spouse of spiritual depth and otherworldly quality — or indicates a past-life connection that makes the relationship feel simultaneously familiar and elusive. The partner may be detached, spiritually inclined, or difficult to hold onto in conventional ways. The marriage is deeply karmic and calls the native toward spiritual maturity through the experience of partnership."
+  },
+
+  seventh_lord: {
+    Sun: "The 7th lord Sun indicates a spouse who is dignified, authoritative, and proud — someone with a strong sense of identity and social standing. The lord's house placement will further define where the spouse's energy is directed. Generally, the partner has a solar quality of leadership and self-expression, and they shine in whatever field they choose.",
+    Moon: "The 7th lord Moon brings a spouse of nurturing, changeable, and emotionally rich nature. The partner is deeply family-oriented and home-loving. Their own emotional cycles and needs are central to the marriage dynamic. The native's life becomes deeply intertwined with the emotional rhythms of their partner.",
+    Mars: "The 7th lord Mars brings energy, passion, and decisive action to the marriage. The spouse is courageous, action-oriented, and independent. There is a fiery, enterprising quality to the partner. The marriage itself has a dynamic, sometimes combative quality that keeps both parties engaged and alive.",
+    Mercury: "The 7th lord Mercury brings intelligence, versatility, and communicativeness to the marriage dynamic. The spouse is likely educated, articulate, and business-minded. The marriage is sustained by good communication and mutual intellectual respect. The partner may be involved in commerce, writing, or any Mercury-ruled field.",
+    Jupiter: "The 7th lord Jupiter is deeply auspicious — it indicates a spouse of wisdom, dharmic nature, and expansive goodness. The marriage is blessed with spiritual merit and genuine mutual respect. The partner is likely well-educated, philosophically inclined, and socially respected. This placement generally promises a happy, enriching marriage.",
+    Venus: "The 7th lord Venus brings beauty, romance, and aesthetic refinement to the marriage. The spouse is charming, artistic, and pleasure-loving. The relationship has a naturally harmonious, pleasure-seeking quality. The partner values beauty in all forms and creates an enjoyable, sensually rich home environment.",
+    Saturn: "The 7th lord Saturn brings seriousness, commitment, and karmic weight to the marriage. The spouse is responsible, disciplined, and deeply reliable. The marriage may begin later in life or after considerable deliberation. What it lacks in spontaneous romance it makes up for in durability, depth, and mutual respect earned through shared challenges."
+  },
+
+  upapada: {
+    Aries: "Upapada in Aries brings a spouse of dynamic, pioneering energy — they are independent, courageous, and perhaps the first of their kind in some way. The marriage has a quality of fresh beginnings and bold initiatives. The partner may be athletic, entrepreneurial, or a natural leader. The relationship requires both individuals to honour each other's need for independence.",
+    Taurus: "Upapada in Taurus brings a spouse who is grounded, sensual, and devoted to beauty and material comfort. The marriage is blessed with stability, sensual warmth, and a shared love of the finer things in life. The partner is reliable, artistic, and has a natural gift for creating a comfortable, beautiful home. Financial security is important to them.",
+    Gemini: "Upapada in Gemini brings a spouse who is communicative, curious, and intellectually lively. The marriage thrives on conversation, shared learning, and mutual mental stimulation. The partner is versatile and adaptable, perhaps involved in communications, media, or education. Duality in some form — dual careers, dual interests, or a complex personality — is a theme.",
+    Cancer: "Upapada in Cancer brings a spouse who is deeply nurturing, home-loving, and emotionally devoted. The marriage is characterised by strong family bonds, emotional depth, and a sacred devotion to home. The partner is intuitive, protective of their loved ones, and may be deeply connected to their own mother and family of origin. The home they create together is their sanctuary.",
+    Leo: "Upapada in Leo brings a spouse of creative brilliance, pride, and generous heart. The marriage has a quality of performance and warmth — there is often a public or social dimension to the relationship. The partner is charismatic, naturally commanding, and deeply loyal. They need admiration and appreciation to thrive in the marriage.",
+    Virgo: "Upapada in Virgo brings a spouse who is analytical, service-oriented, and deeply devoted to perfection in their work and relationships. The marriage is characterised by mutual helpfulness, practical love, and attention to detail. The partner may be involved in health, healing, or any service field. They show love through acts of service and practical care.",
+    Libra: "Upapada in Libra — the natural sign of marriage — brings a spouse who is refined, diplomatic, and deeply committed to partnership and fairness. The marriage is blessed with mutual respect, aesthetic harmony, and a genuine desire for balanced relating. The partner is socially gracious, artistically gifted, and devoted to creating beauty and justice in their shared life.",
+    Scorpio: "Upapada in Scorpio brings a spouse of intense, transformative, and deeply passionate nature. The marriage is characterised by profound emotional bonding, psychological depth, and transformative experiences. The partner is mysterious, powerful, and deeply loyal once trust is established. The relationship may involve periods of intense change that ultimately forge an unbreakable bond.",
+    Sagittarius: "Upapada in Sagittarius brings a spouse who is philosophical, freedom-loving, and spiritually adventurous. The marriage is characterised by a shared pursuit of truth, travel, and higher meaning. The partner is generous, optimistic, and deeply idealistic. They need space and philosophical freedom within the relationship and inspire the native toward their highest aspirations.",
+    Capricorn: "Upapada in Capricorn brings a spouse who is ambitious, disciplined, and deeply responsible. The marriage is built on mutual respect for hard work, long-term goals, and social standing. The partner is a capable achiever who takes the duties of marriage very seriously. They may be reserved in emotional expression but show love through consistent, reliable action.",
+    Aquarius: "Upapada in Aquarius brings a spouse who is progressive, intellectually independent, and humanitarian in spirit. The marriage has an unconventional quality — the couple may share unusual beliefs, lifestyles, or social circles. The partner is idealistic, community-minded, and values personal freedom highly. The relationship thrives when both individuals honour each other's need for individual expression.",
+    Pisces: "Upapada in Pisces brings a spouse of profound spiritual depth, compassion, and imaginative richness. The marriage has a dreamy, otherworldly quality — almost as if it belongs to another realm. The partner is empathetic, creative, and deeply spiritual. The relationship is characterised by unconditional love, artistic co-creation, and a shared sense of the sacred in daily life."
+  }
+};
+
+// ─── ANALYSIS ENGINE ───
+function analyzeSpouse() {
+  const dk  = document.getElementById('darakaraka').value;
+  const nak = document.getElementById('nakshatra').value;
+  const avr = document.getElementById('ashtakavarga').value;
+  const sp  = document.getElementById('seventh_planet').value;
+  const sl  = document.getElementById('seventh_lord').value;
+  const upa = document.getElementById('upapada').value;
+
+  const errEl = document.getElementById('error');
+  if (!dk || !nak || !avr || !sp || !sl || !upa) {
+    errEl.style.display = 'block'; return;
+  }
+  errEl.style.display = 'none';
+
+  const dk_data = DATA.darakaraka[dk];
+  const nak_txt = DATA.nakshatra[nak];
+  const avr_txt = DATA.ashtakavarga[avr];
+  const sp_txt  = DATA.seventh_planet[sp];
+  const sl_txt  = DATA.seventh_lord[sl];
+  const upa_txt = DATA.upapada[upa];
+
+  const traits = [
+    { title: '✦ Physical Appearance', text: dk_data.appearance },
+    { title: '✦ Personality & Temperament', text: dk_data.personality },
+    { title: '✦ Profession & Career', text: dk_data.profession },
+    { title: '✦ Relationship Style', text: dk_data.relationship },
+    { title: '✦ Gifts & Strengths', text: dk_data.strengths },
+    { title: '✦ Karmic Challenges', text: dk_data.challenges },
+    { title: '✦ Spiritual Nature', text: dk_data.spiritual },
+    { title: '✦ Nakshatra Influence', text: nak_txt },
+  ];
+
+  const grid = document.getElementById('trait-grid');
+  grid.innerHTML = traits.map(t => `
+    <div class="trait-card">
+      <h3>${t.title}</h3>
+      <p>${t.text}</p>
+    </div>
+  `).join('');
+
+  document.getElementById('result-subtitle').textContent =
+    `${dk} Darakaraka · ${nak} Nakshatra · Upapada in ${upa}`;
+
+  document.getElementById('full-analysis').innerHTML = `
+    <h3>✦ Complete Synthesis</h3>
+    <p><strong style="color:var(--gold-light)">Ashtakavarga Reading:</strong> ${avr_txt}</p>
+    <p><strong style="color:var(--gold-light)">7th House Planet (${sp}):</strong> ${sp_txt}</p>
+    <p><strong style="color:var(--gold-light)">7th Lord (${sl}):</strong> ${sl_txt}</p>
+    <p><strong style="color:var(--gold-light)">Upapada Lagna in ${upa}:</strong> ${upa_txt}</p>
+    <div class="source-tag">
+      Based on: Darakaraka ${dk} · ${nak} Nakshatra · Ashtakavarga ${avr.replace('_',' ')} ·
+      ${sp} in 7th House · 7th Lord ${sl} · Upapada in ${upa}
+    </div>`;
+
+  const resultEl = document.getElementById('result');
+  resultEl.style.display = 'block';
+  resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+</body>
+</html>
